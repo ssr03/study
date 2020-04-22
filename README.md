@@ -1,7 +1,7 @@
 # study
 > 개발 공부 정리
 
-* Git
+* [Git](https://github.com/ssr03/study/blob/master/git/Git.md)
 
 * Vue
 
