@@ -19,14 +19,14 @@
 
 ## git init
 
-* 프로젝트 폴더 만들기
+* 프로젝트 폴더 만들기
 
   ```bash
   $mkdir git-study
   $cd git-study/
   ```
 
-* 버전 관리를 하려고 하는 디렉토리를 git에게 알려주기
+* 버전 관리를 하려고 하는 디렉토리를 git에게 알려주기
 
   ```bash
   // 현재 디렉토리 버전관리
@@ -68,7 +68,7 @@
   $git status
   ```
 
-* 버전관리 할 파일을 git에 추가
+* 버전관리 할 파일을 git에 추가
 
   ```bash
   $git add f1.txt
@@ -81,7 +81,7 @@
   * 의미 있는 변화를 의미
   * 작업이 완결된 상태
 
-* 저장소의 상태 확인
+* 저장소의 상태 확인
 
   ```bash
   $git status
@@ -105,7 +105,7 @@
   * 현재 버전의 메세지(commit 메세지) 적기
   * `i`를 눌러서 입력-커밋 메세지 입력-esc-`:wq`입력하여 저장후 종료
 
-* 버전 확인
+* 버전 확인
 
   ```bash
   $git log
@@ -157,13 +157,87 @@
 
 ### repository
 
-* 커밋이 된 결과가 저장되는 곳
+* 커밋이 된 결과가 저장되는 곳
 
 ## 변경 사항 확인하기(log&diff)
 
+* 차이점 확인
 
+  ```bash
+  $git log
+  ```
+  * 지금까지의 역사 보기
+
+* 커밋 메세지 보기
+  
+  ```bash
+$git log -p
+   ```
+   
+   *  소스와 소스 사이의 차이점 볼 수 있음
+
+   * 결과 화면
+
+     <img src="..\assets\git log.PNG" alt="git log화면" style="zoom: 130%;" />
+   
+     * `--- /dev/null`은 이전 버전 내용
+   
+       * `/dev/null`은 이전 버전에선 파일이 없음을 의미
+   * `+++ /b/f1.txt`는 현재 버전(1)의 내용
+   
+* commit 아이디-commit메세지가 가르키는 고유한 주소
+
+  ```bash
+  $git log
+  
+  # 해당 commit이전의 메세지만 보기
+  $git log 2d8b70c22ccbc26fe28fbc1fb59c656102b66d70
+  ```
+  
+  * 각각의 commit은 자신의 고유한 아이디를 갖게 됨 
+    * ex) `commit 2d8b70c22ccbc26fe28fbc1fb59c656102b66d70`
+  
+* commit의 차이점
+
+   ```bash
+   git diff 48c8781c6d51d950c463f26dee0163fab4464c80..8904d7d07aa0c577485b9fcb4a46a04bfd9e0812
+   
+   # commit전 현재 변경 사항 파악
+   git diff
+   ```
+
+   * 소스상의 차이점 보여줌
+   * 버전과 버전 사이 소스코드 차이 볼 수 있음
+
+   * `git  diff`: 커밋 전에 이전 커밋과의 차이점
 
 ## 과거로 돌아가기(reset)
+
+* commit을 취소하는 명령
+
+* 현재의 log를 취소해서 과거로 돌아가기
+
+  1. reset
+  2. revert
+     * 커밋을 취소하면서 새로운 버전 생성
+
+* 이전 상태로 돌아가기
+
+  ```bash
+  $git log
+  $git reset 656d5ccab02a1741498abab8399bd393c4a22d2c --hard
+  
+  $git log
+  ```
+
+  * 초기화한 버전의 상태로 돌아감
+  * 이후의 버전은 삭제
+
+* 가능한 어떠한 정보도 삭제하지 않는게 좋음
+
+  * reset의 경우 복구 가능(남아있음)
+  * 공유한 이후에는 reset해서는 안됨
+  * 본인의 컴퓨터에서만 reset작업하기
 
 ## git의 원리소개
 
