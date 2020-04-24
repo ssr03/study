@@ -161,7 +161,7 @@
 
 ## 변경 사항 확인하기(log&diff)
 
-* 차이점 확인
+* 차이점 확인
 
   ```bash
   $git log
@@ -171,20 +171,19 @@
 * 커밋 메세지 보기
   
   ```bash
-$git log -p
-   ```
-   
+  $git log -p
+  ```
    *  소스와 소스 사이의 차이점 볼 수 있음
 
    * 결과 화면
 
      <img src="..\assets\git log.PNG" alt="git log화면" style="zoom: 130%;" />
-   
+  
      * `--- /dev/null`은 이전 버전 내용
-   
+  
        * `/dev/null`은 이전 버전에선 파일이 없음을 의미
    * `+++ /b/f1.txt`는 현재 버전(1)의 내용
-   
+  
 * commit 아이디-commit메세지가 가르키는 고유한 주소
 
   ```bash
@@ -221,7 +220,7 @@ $git log -p
   2. revert
      * 커밋을 취소하면서 새로운 버전 생성
 
-* 이전 상태로 돌아가기
+* 이전 상태로 돌아가기
 
   ```bash
   $git log
