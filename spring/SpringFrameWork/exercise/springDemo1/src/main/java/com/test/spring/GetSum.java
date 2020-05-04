@@ -5,9 +5,9 @@ public class GetSum {
 	private int bb;
 	
 	public void sum() {
-		System.out.println("´õÇÏ±â");
+		System.out.println("ë”í•˜ê¸°");
 		int result = aa + bb;
-		System.out.println("ÇÕ:"+result);
+		System.out.println("í•©:"+result);
 	}
 
 	public int getAa() {
