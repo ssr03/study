@@ -42,12 +42,51 @@
   4. Eclipse에 스프링 plugin설치
 
      * help->eclipse Marketplace-> find:STS로 검색
+     * STS URL: http://spring.io/
+
+* spring의 중요 개념
+
+  * **DI(dependency Injection)**
+    * 의존성 주입
+    * 객체 a가 객체 b와 c의 기능을 사용할 때, a에서 객체를 직접 생성하는 것이 아니라 외부 제 3자(제 3의 객체 or 클라이언트)에 의해서 만들어 놓은 객체를 사용
+  * **IoC**
 
 ## 개발환경 구축 및 프로젝트 만들기
 
-
+* eclipse->window->open perspective->spring
+* 프로젝트 생성
+  * file->new->spring legacy project
+  * spring maven선택
+* `com.test.spring`패키지 생성
 
 ## 스프링의 특징 및 DI 기본 개념
+
+### 스프링 프레임워크란?
+
+* 스프링은 엔터프라이즈 애플리케이션에서 필요로 하는 여러가지 기능들을 제공하는 프레임워크
+* J2E가 제공하는 기능들을 스프링에서 지원 하고 있기 때문에 국내에서 가장 인기 있는 프레임워크로 자리를 잡음
+* 스프링은 J2E에서 제공하는 기능 외에 DI나 AOP와 같은 기능을 지원
+
+### 스프링 프레임워크 특징
+
+* 스프링은 경량의 프레임워크
+  * 자바의 객체를 담고 있는 컨테이너
+  * 객체의 생성, 소멸과 같은 생명주기를 관리
+* DI(Dependency Injection): 의존성 주입 패턴 지원
+  * 설정파일을 통해서 의존관계를 설정해 주는 패턴
+* AOP(Aspect Oriented Programming)을 지원
+  * 트랜잭션이나, 로깅, 보안과 같은 엔터프라이즈 애플리케이션에서 공통으로 필요로 하는 기능을 분리해서 각 모듈에 적용할 수 있도록 하는 기능
+* 스프링은 POJO(Plain Old Java Object) 지원
+  * 특정 인터페이스나 클래스를 상속받지 않는 순수한 자바 객체를 스프링 컨테이너가 저장
+* 트랜잭션 처리를 위한 일관된 방식 제공
+* 영속성(persistence)과 관련된 다양한 API 제공
+  * JDBC, IBatis, MyMatis, JPA, Hibernate 등과 같은 프레임워크와 연동 지원
+
+### DI(Dependency Injection) 의존성 주입
+
+* DI 스프링의 핵심 개념 중 하나
+* 객체 사이의 의존 관계를 객체 자신이 아닌 외부(스프링 컨테이너)에서 수행하는 개념
+* 의존관계의 설정은 설정파일(`bean.xml`) or `어노테이션`을 이용하여 설정
 
 ## 인터페이스를 이용한 의존성 낮추기
 
