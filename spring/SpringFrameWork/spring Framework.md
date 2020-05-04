@@ -37,7 +37,7 @@
          * [x] publish module contexts to separate XML files 
          * [x] modules auto reload by default
 
-       ![tomcat 설정](..\..\assets\tomcat 설정.PNG)
+       <img src="..\..\assets\tomcat 설정.PNG" alt="tomcat 설정" style="zoom:80%;" />
 
   4. Eclipse에 스프링 plugin설치
 
