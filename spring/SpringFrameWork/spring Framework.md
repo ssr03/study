@@ -48,8 +48,10 @@
 
   * **DI(dependency Injection)**
     * 의존성 주입
-    * 객체 a가 객체 b와 c의 기능을 사용할 때, a에서 객체를 직접 생성하는 것이 아니라 외부 제 3자(제 3의 객체 or 클라이언트)에 의해서 만들어 놓은 객체를 사용
+    * 객체 a가 객체 b와 c의 기능을 사용할 때, a에서 객체를 직접 생성하는 것이 아니라 외부 제 3자(제 3의 객체 or 클라이언트)에 의해서 만들어 놓은 객체를 사용
   * **IoC**
+
+
 
 ## 개발환경 구축 및 프로젝트 만들기
 
@@ -58,6 +60,8 @@
   * file->new->spring legacy project
   * spring maven선택
 * `com.test.spring`패키지 생성
+
+
 
 ## 스프링의 특징 및 DI 기본 개념
 
@@ -77,7 +81,7 @@
 * AOP(Aspect Oriented Programming)을 지원
   * 트랜잭션이나, 로깅, 보안과 같은 엔터프라이즈 애플리케이션에서 공통으로 필요로 하는 기능을 분리해서 각 모듈에 적용할 수 있도록 하는 기능
 * 스프링은 POJO(Plain Old Java Object) 지원
-  * 특정 인터페이스나 클래스를 상속받지 않는 순수한 자바 객체를 스프링 컨테이너가 저장
+  * 특정 인터페이스나 클래스를 상속받지 않는 순수한 자바 객체를 스프링 컨테이너가 저장
 * 트랜잭션 처리를 위한 일관된 방식 제공
 * 영속성(persistence)과 관련된 다양한 API 제공
   * JDBC, IBatis, MyMatis, JPA, Hibernate 등과 같은 프레임워크와 연동 지원
@@ -86,9 +90,122 @@
 
 * DI 스프링의 핵심 개념 중 하나
 * 객체 사이의 의존 관계를 객체 자신이 아닌 외부(스프링 컨테이너)에서 수행하는 개념
-* 의존관계의 설정은 설정파일(`bean.xml`) or `어노테이션`을 이용하여 설정
+* 의존관계의 설정은 설정파일(`bean.xml`) or `어노테이션`을 이용하여 설정
+
+
 
 ## 인터페이스를 이용한 의존성 낮추기
+
+* AA 객체에서 BB 객체를 생성
+
+  ```java
+  package com.test.spring;
+  
+  public class BB {
+  	public void aa() {
+  		System.out.println("BB객체의 aa() 메서드 입니다!");
+  	}
+  }
+  ```
+
+  ```java
+  package com.test.spring;
+  
+  public class AA {
+  	BB bb = new BB();
+  	
+  	public void print() {
+  		bb.aa();
+  	}
+  }
+  ```
+
+  * AA는 BB에 의존한다(AA has a BB)
+    * AA객체는 bb라는 객체를 직접 가지고 있음
+
+* 그렇다면 DI는 의존하는 객체에 대한 획득을 클래스에서 하지 않고, 스프링 컨테이너가 주입(제공)해 준다.
+
+  * 개발자는 AA 클래스에서 `BB bb = new BB();`를 사용하지 않고 스피링 컨테이너가 AA 클래스를 생성할 때 생성하는 BB클래스의 인스턴스(bean)를 주입 받는다(의존성을 낮추기 위해)
+  * 설정은 xml 설정을 통해서 이루어진다
+
+* 인터페이스를 이용한 의존성을 낮춤:
+
+  ```
+  service 객체--------------------------> 인터페이스 DAO
+  DAO dao									^		^
+  										aDao	bDao
+  
+  dao = new aDao()
+  dao = new bDao()
+  ```
+
+  * 위의 그림은 의존성이 낮아짐
+
+  * 코드의 변경 없이 xml의 설정만으로 개발자가 원하는 객체의 주입으로 바꿀 수 있음
+
+  * 실습
+
+    * `com.test.di`패키기 생성
+
+      * `TestDAO` interface생성
+
+        ```java
+        package com.test.di;
+        
+        public interface TestDAO {
+        	void printMsg();
+        }
+        ```
+
+      * `TestDAOImp`
+
+        ```java
+        package com.test.di;
+        
+        public class TestDAOImp implements TestDAO{
+        
+        	@Override
+        	public void printMsg() {
+        		System.out.println("TestDAOImp의 printMsg()메소드 입니다~");
+        		
+        	}
+        
+        }
+        ```
+
+    * `src/main/resource`에서 `Spring Bean Configuration File`로 `test.xml`설정 파일 만들기
+
+      ```xml
+      ...
+      <bean id="TestDAOImp" class="com.test.di.TestDAOImp"/>
+      ...
+      ```
+
+      * new->Spring Bean Configuration File
+
+    * 결과 확인을 위한 `TestMain`클래스 생성
+
+      ```java
+      package com.test.di;
+      
+      import org.springframework.context.support.AbstractApplicationContext;
+      import org.springframework.context.support.GenericXmlApplicationContext;
+      
+      public class TestMain {
+      	public static void main(String[] args) {
+      		
+      		String confLoc = "classpath:test.xml";
+      		AbstractApplicationContext ctx = new GenericXmlApplicationContext(confLoc);
+      		TestDAO testDAO = ctx.getBean("TestDAOImp", TestDAOImp.class);
+      		
+      		System.out.println("==========");
+      		testDAO.printMsg();
+      		System.out.println("==========");
+      	}
+      }
+      ```
+
+      * `TestDAO testDao = new TestDAOImp()`코드를 사용하지 않았음에도 불구하고, `testDao.printMsg()`사용
 
 ## Bean 설정 파일 개념 및 DI구현
 
