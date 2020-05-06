@@ -17,6 +17,7 @@ dependencies {
 	implementation 'de.codecentric:spring-boot-admin-starter-server:2.2.2'
 	// https://mvnrepository.com/artifact/de.codecentric/spring-boot-admin-starter-server
 	//compile group: 'de.codecentric', name: 'spring-boot-admin-starter-server', version: '2.2.2'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
