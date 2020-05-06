@@ -205,9 +205,126 @@
       }
       ```
 
-      * `TestDAO testDao = new TestDAOImp()`코드를 사용하지 않았음에도 불구하고, `testDao.printMsg()`사용
+      * `TestDAO testDao = new TestDAOImp()`코드를 사용하지 않았음에도 불구하고, `testDao.printMsg()`사용
+
+
 
 ## Bean 설정 파일 개념 및 DI구현
+
+* `com.test.diEx01`패키지 생성
+
+  * `GetSum.java`
+
+    ```java
+    package com.test.diEx01;
+    
+    public class GetSum {
+    
+    	public void sum(int aa, int bb) {
+    		System.out.println("더하기");
+    		int result = aa + bb;
+    		System.out.println("합:"+result);
+    	}
+    }
+    ```
+
+  * `MyGetSum.java`
+
+    ```java
+    package com.test.diEx01;
+    
+    public class MyGetSum {
+    	public GetSum getsum;
+    	private int a;
+    	private int b;
+    	
+    	public MyGetSum() {
+    	}
+    	
+    	public void sum() {
+    		getsum.sum(a,b);
+    	}
+    
+    	public void setGetsum(GetSum getsum) {
+    		this.getsum = getsum;
+    	}
+    
+    	public void setA(int a) {
+    		this.a = a;
+    	}
+    
+    	public void setB(int b) {
+    		this.b = b;
+    	}
+    }
+    ```
+
+  * `src/main/resources`에 `getsum.xml`생성(spring bean configuration file)
+
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <beans xmlns="http://www.springframework.org/schema/beans"
+    	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    	
+    	<bean id="getsum" class="com.test.diEx01.GetSum"/>
+    	<bean id="myGetSum" class="com.test.diEx01.MyGetSum">
+    		<property name="getsum">
+    			<ref bean="getsum"/>
+    		</property>
+    		<property name="a" value="10"/>
+    		<property name="b" value="100"/>
+    	</bean>
+    </beans>
+    ```
+
+    * bean은 객체(instance)와 같음
+    * `ref`는 참고하고자 하는 bean을 의미
+
+  * `Main.java`
+
+    ```java
+    package com.test.diEx01;
+    
+    public class Main {
+    
+    	public static void main(String[] args) {
+    		// MyGetSum 내용 불러오기
+    		MyGetSum myGetSum = new MyGetSum();
+    		myGetSum.setGetsum(new GetSum());
+    		
+    		myGetSum.setA(10);
+    		myGetSum.setB(100);
+    		
+    		myGetSum.sum();
+    	}
+    }
+    ```
+
+    * GetSum 클래스를 Main에서 직접 생성하여 의존에 대한 책임을 Main이 하고 있음
+    * Spring 에서는 xml에서 의존 관계를 가짐
+
+  * `Main.java`
+
+    ```java
+    package com.test.diEx01;
+    
+    import org.springframework.context.support.AbstractApplicationContext;
+    import org.springframework.context.support.GenericXmlApplicationContext;
+    
+    public class Main {
+    
+    	public static void main(String[] args) {
+    
+    		AbstractApplicationContext ctx = new GenericXmlApplicationContext("classpath:getsum.xml");
+    		MyGetSum myGetSum = ctx.getBean("myGetSum", MyGetSum.class);
+    		
+    		myGetSum.sum();
+    	}
+    }
+    ```
+
+    
 
 ## 생성자 설정을 이용한 DI구현
 
