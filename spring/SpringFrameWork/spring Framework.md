@@ -328,10 +328,10 @@
 
 ## 생성자 설정을 이용한 DI구현
 
-#### 의존성 주입 종류
+### 의존성 주입 종류
 
 1. setter(설정 메소드)를 이용한 주입
-   * 설정 메소드를 사용해서 의존성을 주입하는 것
+   * 설정 메소드를 사용해서 의존성을 주입하는 것
 2. Constructor(생성자)를 통한 주입
    * 생성자를 사용해서 의존성을 주입하는 것
 
@@ -514,6 +514,112 @@
 
 
 ## 프로퍼티 설정을 이용한 DI구현
+
+* 실무에서는 의존관계를 설정할 때, 생성자보다는 프로퍼티 설정을 더 많이 사용
+
+* `com.test.diEx04`패키지 생성
+
+  * `MyBatisDao.java`
+
+    ```java
+    package com.test.diEx04;
+    
+    public class MyBatisDao {
+    	// 기본 생성자
+    	public MyBatisDao() {}
+    	
+    	public void insertDB() {
+    		System.out.println("insert 로직...");
+    	}
+    	
+    	public void updateDB() {
+    		System.out.println("update 로직");
+    	}
+    }
+    ```
+
+  * `MyBatisService.java`
+
+    ```java
+    package com.test.diEx04;
+    
+    public class MyBatisService {
+    	private MyBatisDao myBatisDao;
+    	
+    	// setter
+    	public void setMyBatisDao(MyBatisDao myBatisDao) {
+    		this.myBatisDao = myBatisDao;
+    	}
+    	
+    	public void myBatisTest() {
+    		System.out.println("================");
+    		myBatisDao.insertDB();
+    		myBatisDao.updateDB();
+    		System.out.println("================");
+    	}
+    }
+    ```
+
+    * `MyBatisDao`를 의존하는 서비스 객체
+
+  * `myBatis.xml`(spring bean configuration file)
+
+    * property 생성방식
+
+      ```xml
+      <bean id="myBatis" class="com.test.diEx04.MyBatisDao"></bean>
+      
+      <bean id="service" class="com.test.diEx04.MyBatisService">
+          <!-- 프로퍼티 설정방식 -->
+          <property name="myBatisDao" ref="myBatis"></property>
+      </bean>
+      ```
+
+      * setter 메서드(ex. `setMyBatisDao`)에서 set을 제외한 메소드명을 property name으로 사용
+      * 해당 클래스의 `setMyBatisDao()`를 호출하는 것
+      * 이러한 방식을 **프로퍼티 설정방식**이라 한다
+
+    * xml의 네임 스페이스 방식 
+
+      ```xml
+      <beans xmlns="http://www.springframework.org/schema/beans"
+      	...
+      xmlns:p="http://www.springframework.org/schema/p"
+      	...
+             >
+      	<bean id="myBatis" class="com.test.diEx04.MyBatisDao"></bean>
+      
+      	<bean id="service" class="com.test.diEx04.MyBatisService" p:myBatisDao-ref="myBatis">	
+      	</bean>
+      </beans>
+      ```
+
+      * xml의 네임 스페이스 방식을 이용하면 property 태그 사용x
+      * "p:프로퍼티 이름", "p: 프로퍼티이름-ref='..'"속성 사용
+
+  * `MainMyBatis.java`
+
+    ```java
+    package com.test.diEx04;
+    
+    import org.springframework.context.support.AbstractApplicationContext;
+    import org.springframework.context.support.GenericXmlApplicationContext;
+    
+    public class MainMyBatis {
+    
+    	public static void main(String[] args) {
+    		AbstractApplicationContext ctx = new GenericXmlApplicationContext("classpath:myBatis.xml");
+    		MyBatisService service = ctx.getBean("service", MyBatisService.class);
+    		
+    		service.myBatisTest();
+    		
+    		ctx.close();
+    	}
+    
+    }
+    ```
+
+    
 
 ## DI 사용의 장점
 
