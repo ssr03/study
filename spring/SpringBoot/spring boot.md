@@ -1,6 +1,6 @@
 # Spring Boot Admin
 
-> https://www.baeldung.com/spring-boot-admin를 참조하여 번역 및 정리한 문서입니다.
+> https://www.baeldung.com/spring-boot-admin 를 참조하여 번역 및 정리한 문서입니다.
 
 ### Overview
 
