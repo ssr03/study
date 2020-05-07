@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<bean id="person1" class="com.test.diEx03.Person">
+		<constructor-arg>
+			<value>홍길동</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>남</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>26</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>88888-123456</value>
+		</constructor-arg>
+	</bean>
+	<bean id="person2" class="com.test.diEx03.Person">
+		<constructor-arg>
+			<value>홍길서</value>
+		</constructor-arg>
+		<constructor-arg value="여"/>
+		<constructor-arg value="15"/>
+		<constructor-arg value="9241212-2511515"/>
+	</bean>
+	<bean id="personInfo" class="com.test.diEx03.PersonInfo">
+		<constructor-arg>
+			<ref bean="person1"/>
+		</constructor-arg>
+	</bean>
+</beans>

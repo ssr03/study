@@ -183,7 +183,7 @@
 
       * new->Spring Bean Configuration File
 
-    * 결과 확인을 위한 `TestMain`클래스 생성
+    * 결과 확인을 위한 `TestMain`클래스 생성
 
       ```java
       package com.test.di;
@@ -327,6 +327,191 @@
     
 
 ## 생성자 설정을 이용한 DI구현
+
+#### 의존성 주입 종류
+
+1. setter(설정 메소드)를 이용한 주입
+   * 설정 메소드를 사용해서 의존성을 주입하는 것
+2. Constructor(생성자)를 통한 주입
+   * 생성자를 사용해서 의존성을 주입하는 것
+
+### Constructor을 통한 주입
+
+* `com.test.diEx02` 패키지 생성
+
+  * `ExamDoa.java`
+
+    ```java
+    package com.test.diEx02;
+    
+    public class ExamDao {
+    	private String msg;
+    	
+    	public ExamDao() {};	//기본 생성자
+    	
+    	public ExamDao(String msg) {	//인자 생성자
+    		this.msg = msg;
+    	}
+    	
+    	public void outputMsg() {
+    		System.out.println("msg: "+msg);
+    	}
+    }
+    ```
+
+  * `examDao.xml`: 설정파일(Spring bean configuration file)
+
+    ```xml
+    <bean id="examDao" class="com.test.diEx02.ExamDao">
+        <constructor-arg value="Hello Spring!"/>
+    </bean>
+    ```
+
+    * `contructor-arg`태그를 사용하지 않으면, 기본 생성자를 토대로 생성하게 됨
+
+  * `MainExam.java`
+
+    ```java
+    package com.test.diEx02;
+    
+    import org.springframework.context.support.AbstractApplicationContext;
+    import org.springframework.context.support.GenericXmlApplicationContext;
+    
+    public class MainExam {
+    
+    	public static void main(String[] args) {
+    		AbstractApplicationContext ctx = new GenericXmlApplicationContext("classpath:examDao.xml");
+    		ExamDao examDao = ctx.getBean("examDao", ExamDao.class);
+    		
+    		examDao.outputMsg();
+    	}
+    	
+    }
+    ```
+
+    * `getBean`에서 불러 올 때는 해당 id값으로 불러온다
+
+* `com.test.diEx03` 패키지 생성
+
+  * `Person.java`
+
+    ```java
+    package com.test.diEx03;
+    
+    public class Person {
+    
+    	private String name;
+    	private String gender;
+    	private String age;
+    	private String idNo;
+    	
+    	//기본 생성자
+    	public Person() {}
+    	
+    	//인자 생성자
+    	public Person(String name, String gender, String age, String idNo) {
+    		this.name = name;
+    		this.gender = gender;
+    		this.age = age;
+    		this.idNo = idNo;
+    	}
+    
+    	//setter, getter
+        ...
+    }
+    ```
+
+  * `PersionInfo.java`: 사람에 대한 정보 출력해 주는 클래스
+
+    ```java
+    package com.test.diEx03;
+    
+    public class PersonInfo {
+    	private Person person;
+    	
+    	//기본생성자
+    	public PersonInfo(){}
+    	
+    	//인자 생성자
+    	public PersonInfo(Person person) {
+    		this.person = person;
+    	}
+    	
+    	public void getPersoInfo() {
+    		if(person != null) {
+    			System.out.println("이름: "+person.getName());
+    			System.out.println("성별: "+person.getGender());
+    			System.out.println("나이: "+person.getAge());
+    			System.out.println("주민번호: "+person.getIdNo());
+    			System.out.println("----------------------------");
+    		}
+    	}
+    	
+    	public void setPerson(Person person) {
+    		this.person = person;
+    	}
+    	
+    }
+    ```
+
+  *  `person.xml`설정 파일(Spring bean configuration file)
+
+    ```xml
+    <bean id="person1" class="com.test.diEx03.Person">
+        <constructor-arg>
+            <value>홍길동</value>
+        </constructor-arg>
+        <constructor-arg>
+            <value>남</value>
+        </constructor-arg>
+        <constructor-arg>
+            <value>26</value>
+        </constructor-arg>
+        <constructor-arg>
+            <value>88888-123456</value>
+        </constructor-arg>
+    </bean>
+    <bean id="person2" class="com.test.diEx03.Person">
+        <constructor-arg>
+            <value>홍길서</value>
+        </constructor-arg>
+        <constructor-arg value="여"/>
+        <constructor-arg value="15"/>
+        <constructor-arg value="9241212-2511515"/>
+    </bean>
+    <bean id="personInfo" class="com.test.diEx03.PersonInfo">
+        <constructor-arg>
+            <ref bean="person1"/>
+        </constructor-arg>
+    </bean>
+    ```
+
+  * `MainPerson.java`
+
+    ```java
+    package com.test.diEx03;
+    
+    import org.springframework.context.support.AbstractApplicationContext;
+    import org.springframework.context.support.GenericXmlApplicationContext;
+    
+    public class MainPerson {
+    
+    	public static void main(String[] args) {
+    		String confLoc = "classpath:person.xml";
+    		
+    		AbstractApplicationContext ctx = new GenericXmlApplicationContext(confLoc);
+    		PersonInfo personInfo = ctx.getBean("personInfo", PersonInfo.class);
+    		personInfo.getPersoInfo();
+            
+            //자원 반납
+    		ctx.close();
+    	}
+    }
+    ```
+
+    * person1에 대한 정보를 가져온다
+
+
 
 ## 프로퍼티 설정을 이용한 DI구현
 
