@@ -623,6 +623,90 @@
 
 ## DI 사용의 장점
 
+### 의존성 주입(DI)의 장점
+
+* DI를 사용하면, 개발 계획시에 시간이 요구가 되지만, 규모가 큰 프로젝트에서 유지보수 업무를 한다면 DI개발의 장점을 느낄 수 있다.
+
+### 실습
+
+* `com.test.diEx05` 패키지 생성
+
+  *  `Car.java` intereface 
+
+    ```java
+    package com.test.diEx05;
+    
+    public interface Car {
+    	public void drive();
+    }
+    ```
+
+  * Car를 상속 받는 클래스
+
+    ```java
+    package com.test.diEx05;
+    
+    public class HatchbackCar implements Car{
+    	@Override
+    	public void drive() {
+    		System.out.println("해치백 운전합니다!");
+    	}
+    }
+    ```
+
+    ```java
+    package com.test.diEx05;
+    
+    public class SedanCar implements Car{
+    	@Override
+    	public void drive() {
+    		System.out.println("세단을 운전합니다!");	
+    	}
+    }
+    ```
+
+    ```java
+    package com.test.diEx05;
+    
+    public class SUVCar implements Car{
+    
+    	@Override
+    	public void drive() {
+    		System.out.println("SUV를 운전합니다");
+    	}
+    }
+    ```
+
+  * `car.xml`
+
+    ```xml
+    <bean id="car" class="com.test.diEx05.SUVCar"/>
+    ```
+
+  * `CarTester.java`
+
+    ```java
+    package com.test.diEx05;
+    
+    import org.springframework.context.support.AbstractApplicationContext;
+    import org.springframework.context.support.GenericXmlApplicationContext;
+    
+    public class CarTester {
+    
+    	public static void main(String[] args) {
+    		AbstractApplicationContext ctx = new GenericXmlApplicationContext("classpath:car.xml");
+    		Car car =ctx.getBean("car", Car.class);
+    		car.drive();
+    	}
+    }
+    ```
+
+    * 설정파일에서 class만 변경하여 차량 변경 가능
+
+      -> 변경사항 쉽게 유지보수 가능
+
+
+
 ## XML을 이용한 의존관계 설정
 
 ## 자바코드를 이용한 의존관계 설정
