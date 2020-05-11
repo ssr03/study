@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<bean id="player3" class="com.test.diEx06.Player">
+		<constructor-arg value="강정호"/>
+		<constructor-arg value="28"/>
+		<constructor-arg>
+			<list>
+				<value>5번타자</value>
+				<value>3루수</value>
+			</list>
+		</constructor-arg>
+		
+		<property name="height">
+			<value>186</value>
+		</property>
+		<property name="weight">
+			<value>80</value>
+		</property>
+	</bean>
+	<bean id="baseBallTeam" class="com.test.diEx06.BaseBallTeam"
+		c:manager="김응용" c:battingCoach="이순철" c:pitchingCoach="선동렬"
+		p:hitter="강정호">
+			<property name="pitcher" value="류현진"/>
+	</bean>
+</beans>

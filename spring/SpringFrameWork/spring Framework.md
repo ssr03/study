@@ -631,7 +631,7 @@
 
 * `com.test.diEx05` 패키지 생성
 
-  *  `Car.java` intereface 
+  *  `Car.java` intereface 
 
     ```java
     package com.test.diEx05;
@@ -708,6 +708,225 @@
 
 
 ## XML을 이용한 의존관계 설정
+
+### 의존 관계 설정 방법
+
+* XML 파일을 이용한 설정 방법
+* JAVA를 이용한 설정 방법
+* XML과 JAVA를 혼용해서 사용하는 방법
+
+### 실습
+
+* `com.test.diEx06`패키지 생성
+
+  * `Player.java`
+
+    ```java
+    package com.test.diEx06;
+    
+    import java.util.ArrayList;
+    
+    public class Player {
+    	private String name;
+    	private int age;
+    	private ArrayList<String> position;
+    	private double height;
+    	private double weight;
+    	
+    	public Player() {}
+    	
+    	public Player(String name, int age, ArrayList<String> position) {
+    		this.name = name;
+    		this.age = age;
+    		this.position = position;
+    	}
+        ...
+        //setter, getter
+    }
+    ```
+
+  * `PlayerInfo.java`
+
+    ```java
+    package com.test.diEx06;
+    
+    public class PlayerInfo {
+    	public Player player;
+    	
+    	public PlayerInfo() {} 
+    	
+    	public void setPlayer(Player player) {
+    		this.player = player;
+    	}
+    	
+    	public Player getPlayer() {
+    		return player;
+    	}
+    }
+    ```
+
+  * `BaseBallTeam.java`
+
+    ```java
+    package com.test.diEx06;
+    
+    public class BaseBallTeam {
+    	String manager; //야구감독
+    	String battingCoach; 
+    	String pitchingCoach;
+    	String hitter;
+    	String pitcher;
+    	
+    	public BaseBallTeam() {}
+    	
+    	public BaseBallTeam(String manager, String battingCoach, String pitchingCoach) {
+    		this.manager = manager;
+    		this.battingCoach = battingCoach;
+    		this.pitchingCoach = pitchingCoach;
+    	} //인자 생성자
+    
+    	// getter, setter
+        ...
+    }
+    ```
+
+  * `baseBall1.xml`(Spring Bean Configuration file)
+
+    ```xml
+    <bean id="player1" class="com.test.diEx06.Player">
+        <constructor-arg value="박병호"/>
+        <constructor-arg value="28"/>
+        <constructor-arg>
+            <list>
+                <value>4번</value>
+                <value>1루수</value>
+            </list>
+        </constructor-arg>
+        <property name="height">
+            <value>188</value>
+        </property>
+        <property name="weight" value="80"/>
+    </bean>
+    
+    <bean id="playerInfo1" class="com.test.diEx06.PlayerInfo">
+        <property name="player">
+            <ref bean="player1"/>
+        </property>
+    </bean>
+    ```
+
+  * `MainBaseBall.java`
+
+    ```java
+    package com.test.diEx06;
+    
+    import org.springframework.context.support.AbstractApplicationContext;
+    import org.springframework.context.support.GenericXmlApplicationContext;
+    
+    public class MainBaseBall {
+    
+    	public static void main(String[] args) {
+    		String confLoc = "classpath:baseBall1.xml";
+    		AbstractApplicationContext ctx  = new GenericXmlApplicationContext(confLoc);
+    		
+    		Player player1 = ctx.getBean("player1", Player.class);
+    		System.out.println(player1.getName());
+    		System.out.println(player1.getPosition());
+    		
+    		PlayerInfo playerInfo = ctx.getBean("playerInfo1", PlayerInfo.class);
+    		Player player2 = playerInfo.getPlayer();
+    		System.out.println(player2.getName());
+    		System.out.println(player2.getPosition());
+    		
+    		if(player1.equals(player2)) {
+    			System.out.println("player1과 player2는 같은 선수!");
+    		}
+    
+    	}
+    
+    }
+    ```
+
+  * `baseBall2.xml`(JavaBean Configration File)
+
+    ```xml
+    <bean id="player3" class="com.test.diEx06.Player">
+        <constructor-arg value="강정호"/>
+        <constructor-arg value="28"/>
+        <constructor-arg>
+            <list>
+                <value>5번타자</value>
+                <value>3루수</value>
+            </list>
+        </constructor-arg>
+    
+        <property name="height">
+            <value>186</value>
+        </property>
+        <property name="weight">
+            <value>80</value>
+        </property>
+    </bean>
+    ```
+
+  * `MainBaseBall.java`
+
+    ```java
+    package com.test.diEx06;
+    
+    import org.springframework.context.support.AbstractApplicationContext;
+    import org.springframework.context.support.GenericXmlApplicationContext;
+    
+    public class MainBaseBall {
+    
+    	public static void main(String[] args) {
+    		String confLoc = "classpath:baseBall1.xml";
+    		String confLoc2 = "classpath:baseBall2.xml";
+    		AbstractApplicationContext ctx  = new GenericXmlApplicationContext(confLoc, confLoc2);
+            ...
+            Player player3 = ctx.getBean("player3", Player.class);
+    		System.out.println(player3.getName());
+    		System.out.println(player3.getPosition());
+        }
+    }
+    ```
+
+    * 설정파일 두 개를 한꺼번에 적용 가능
+
+  * `baseBall2.xml`
+
+    ```xml
+    <beans 
+    	...
+    	xmlns:c="http://www.springframework.org/schema/c"
+    	xmlns:p="http://www.springframework.org/schema/p"
+        ...
+        >
+        ...
+        <bean id="baseBallTeam" class="com.test.diEx06.BaseBallTeam"
+              c:manager="김응용" c:battingCoach="이순철" c:pitchingCoach="선동렬"
+              p:hitter="강정호">
+            <property name="pitcher" value="류현진"/>
+        </bean>
+    </beans>
+    ```
+
+    * namespace사용
+
+  * `MainBaseBall.java`
+
+    ```java
+    ...
+    System.out.println("===============야구팀 구성================");
+    BaseBallTeam baseBallTeam = ctx.getBean("baseBallTeam", BaseBallTeam.class);
+    System.out.println("감독: "+baseBallTeam.getManager());
+    System.out.println("타격코치: "+baseBallTeam.getBattingCoach());
+    System.out.println("투수코치: "+baseBallTeam.getPitchingCoach());
+    System.out.println("타자: "+baseBallTeam.getHitter());
+    System.out.println("투수: "+baseBallTeam.getPitcher());
+    ```
+
+    
 
 ## 자바코드를 이용한 의존관계 설정
 
