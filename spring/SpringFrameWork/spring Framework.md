@@ -125,7 +125,7 @@
 
 * 그렇다면 DI는 의존하는 객체에 대한 획득을 클래스에서 하지 않고, 스프링 컨테이너가 주입(제공)해 준다.
 
-  * 개발자는 AA 클래스에서 `BB bb = new BB();`를 사용하지 않고 스피링 컨테이너가 AA 클래스를 생성할 때 생성하는 BB클래스의 인스턴스(bean)를 주입 받는다(의존성을 낮추기 위해)
+  * 개발자는 AA 클래스에서 `BB bb = new BB();`를 사용하지 않고 스프링 컨테이너가 AA 클래스를 생성할 때 생성하는 BB클래스의 인스턴스(bean)를 주입 받는다(의존성을 낮추기 위해)
   * 설정은 xml 설정을 통해서 이루어진다
 
 * 인터페이스를 이용한 의존성을 낮춤:
@@ -929,6 +929,125 @@
     
 
 ## 자바코드를 이용한 의존관계 설정
+
+### JAVA를 이용한 설정 방법(어노테이션을 이용)
+
+* 어노테이션(Annotation:Metadata)
+  * JDK5부터 등장한 개념 `ex) @Override`
+  * 선언시에는 `@`를 사용하여 선언
+  * 어노테이션을 사용하는 경우
+    * 컴파일러에게 정보를 알려주거나 
+    * 컴파일할 때와 설치(deployment)시의 작업을 지정하거나
+    * 실행할 때 별도의 처리가 필요한 경우에 사용
+  * 클래스, 메소드, 변수 등 모든 요소에 선언 가능
+* `@Configuration`
+  * 클래스 앞에 선언
+  * "이 클래스는 스프링 설정에 사용되는 클래스 입니다"라고 알려주는 어노테이션
+* `@Bean`
+  * 메소드 앞에 사용
+  * "객체를 생성"
+
+### 실습
+
+* `com.test.diEx07`패키지 생성
+
+  * `Player.java`
+    * `com.test.diEx06`의 `Player.java`복사
+
+  * `ConfigApp.java`
+
+    ```java
+    package com.test.diEx07;
+    
+    import java.util.ArrayList;
+    
+    import org.springframework.context.annotation.Bean;
+    import org.springframework.context.annotation.Configuration;
+    
+    @Configuration
+    public class ConfigApp {
+    
+    	@Bean
+    	public Player player1() {
+    		ArrayList<String> position = new ArrayList<String>();
+    		position.add("4번 타자");
+    		position.add("3루수");
+    		
+    		Player player = new Player("박병호", 28, position);
+    		player.setHeight(187);
+    		player.setWeight(80);
+    		
+    		return player;
+    	}
+    	
+    	@Bean
+    	public Player player2() {
+    		ArrayList<String> position = new ArrayList<String>();
+    		position.add("3번 타자");
+    		position.add("유격수");
+    		
+    		Player player = new Player("강정호", 28, position);
+    		player.setHeight(186);
+    		player.setWeight(79);
+    		
+    		return player;
+    	}
+    }
+    ```
+
+    * 설정 파일
+
+  * `MainBaseBall.java`
+
+    ```java
+    package com.test.diEx07;
+    
+    import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+    
+    public class MainBaseball {
+    	public static void main(String[] args) {
+    		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ConfigApp.class);
+    		
+    		Player player1 = ctx.getBean("player1", Player.class);
+    		System.out.println("선수이름: "+player1.getName());
+    		System.out.println("나이: "+player1.getAge());
+    		System.out.println("포지션: "+player1.getPosition());
+    		System.out.println("신장: "+player1.getHeight());
+    		System.out.println("몸무게: "+player1.getWeight());
+    		
+    		System.out.println("===================================");
+    		
+    		Player player2 = ctx.getBean("player2", Player.class);
+    		System.out.println("선수이름: "+player2.getName());
+    		System.out.println("나이: "+player2.getAge());
+    		System.out.println("포지션: "+player2.getPosition());
+    		System.out.println("신장: "+player2.getHeight());
+    		System.out.println("몸무게: "+player2.getWeight());
+    		
+    		ctx.close();
+    	}
+    }
+    ```
+
+* `cglib.jar`추가
+
+  * ```powershell
+    Exception in thread "main" java.lang.IllegalStateException: CGLIB is required to process @Configuration classes.
+    ```
+
+    * 위와 같은 에러 발생 시, `CGLIB.jar` 가 없어서 발생한 Exception
+
+    * `pom.xml`에 아래와 같은 dependency 추가
+
+      ```xml
+      <dependency>
+          <groupId>cglib</groupId>
+          <artifactId>cglib</artifactId>
+          <version>2.2</version>
+      </dependency>
+      ```
+
+
 
 ## xml과 자바코드 혼용한 의존관계 설정
 
