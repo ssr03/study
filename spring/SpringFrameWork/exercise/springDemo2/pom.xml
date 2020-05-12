@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>test.com</groupId>
 	<artifactId>ex</artifactId>
-	<name>SpringDemo2</name>
+	<name>springDemo2</name>
 	<packaging>war</packaging>
 	<version>1.0.0-BUILD-SNAPSHOT</version>
 	<properties>
