@@ -1051,6 +1051,125 @@
 
 ## xml과 자바코드 혼용한 의존관계 설정
 
+*  XML파일과 JAVA파일을 같이 사용해서 스프링 설정을 하는 방법
+  1. xml 안에서 java코드 불러오는 방식
+  2. java코드 안에서 xml 불어오는 방식
+
+### XML안에 java코드 불러오는 방법
+
+* `com.test.diEx08`패키지 생성
+
+  * `com.test.diEx07`패키지에서 `Player.java`, `ConfigApp.java` 복사
+
+  * `ConfigApp.java`
+
+    * player2() bean 객체 제거->xml에서 생성
+    * `@Configuration` x
+
+  * `baseBall3.xml`(Spring Bean Configuration file)
+
+    ```xml
+    <beans ...
+    	xmlns:context="http://www.springframework.org/schema/context"
+    	xsi:schemaLocation="...
+    	...
+    	http://www.springframework.org/schema/context
+    	http://www.springframework.org/schema/context/spring-context.xsd
+        ">
+    	
+    	<context:annotation-config/>
+    	<bean class="com.test.diEx08.ConfigApp"/>
+    	
+    	<bean id="player2" class="com.test.diEx08.Player">
+    		<constructor-arg value="강정호"/>
+    		<constructor-arg value="28"/>
+    		<constructor-arg>
+    			<list>
+    				<value>3번 타자</value>
+    				<value>유격수</value>
+    			</list>
+    		</constructor-arg>
+    		<property name="height" value="188"/>
+    		<property name="weight" value="80"/>
+    	</bean>
+    
+    </beans>
+    ```
+
+    * java코드에 있는 설정 xml안에 포함
+
+  * `MainBaseBall.java`
+
+    ```java
+    package com.test.diEx08;
+    
+    import org.springframework.context.support.AbstractApplicationContext;
+    import org.springframework.context.support.GenericXmlApplicationContext;
+    
+    public class MainBaseball {
+    	public static void main(String[] args) {
+    		AbstractApplicationContext ctx = new GenericXmlApplicationContext("classpath:baseBall3.xml");
+    		
+    		Player player1 = ctx.getBean("player1", Player.class);
+    		System.out.println("선수이름: "+player1.getName());
+    		System.out.println("나이: "+player1.getAge());
+    		System.out.println("포지션: "+player1.getPosition());
+    		System.out.println("신장: "+player1.getHeight());
+    		System.out.println("몸무게: "+player1.getWeight());
+    		
+    		System.out.println("===================================");
+    		
+    		Player player2 = ctx.getBean("player2", Player.class);
+    		System.out.println("선수이름: "+player2.getName());
+    		System.out.println("나이: "+player2.getAge());
+    		System.out.println("포지션: "+player2.getPosition());
+    		System.out.println("신장: "+player2.getHeight());
+    		System.out.println("몸무게: "+player2.getWeight());
+    		
+    		ctx.close();
+    	}
+    }
+    ```
+
+### java코드에서 xml사용
+
+* `com.test.diEx09`패키지 생성
+
+  * `com.test.diEx08`패키지에서 `Player.java`, `ConfigApp.java`복사
+
+  * `ConfigApp.java`
+
+    ```java
+    @Configuration
+    @ImportResource("classpath:baseBall4.xml")
+    public class ConfigApp {
+        ...
+    }
+    ```
+
+    * `@Configuration`추가
+
+  * `baseBall4.xml`
+
+    ```xml
+    <bean id="player2" class="com.test.diEx09.Player">
+        <constructor-arg value="강정호"/>
+        <constructor-arg value="28"/>
+        <constructor-arg>
+            <list>
+                <value>3번 타자</value>
+                <value>유격수</value>
+            </list>
+        </constructor-arg>
+        <property name="height" value="188"/>
+        <property name="weight" value="80"/>
+    </bean>
+    ```
+
+  * `com.test.diEx07`의 `MainBaseball.java`복사
+
+
+
 ## 빈의 Life Cycle
 
 ## 빈의 범위(Scope)
