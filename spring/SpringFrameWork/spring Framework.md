@@ -934,8 +934,8 @@
 
 * 어노테이션(Annotation:Metadata)
   * JDK5부터 등장한 개념 `ex) @Override`
-  * 선언시에는 `@`를 사용하여 선언
-  * 어노테이션을 사용하는 경우
+  * 선언시에는 `@`를 사용하여 선언
+  * 어노테이션을 사용하는 경우
     * 컴파일러에게 정보를 알려주거나 
     * 컴파일할 때와 설치(deployment)시의 작업을 지정하거나
     * 실행할 때 별도의 처리가 필요한 경우에 사용
@@ -952,8 +952,9 @@
 * `com.test.diEx07`패키지 생성
 
   * `Player.java`
-    * `com.test.diEx06`의 `Player.java`복사
-
+    
+  * `com.test.diEx06`의 `Player.java`복사
+    
   * `ConfigApp.java`
 
     ```java
@@ -1035,7 +1036,7 @@
     Exception in thread "main" java.lang.IllegalStateException: CGLIB is required to process @Configuration classes.
     ```
 
-    * 위와 같은 에러 발생 시, `CGLIB.jar` 가 없어서 발생한 Exception
+    * 위와 같은 에러 발생 시, `CGLIB.jar` 가 없어서 발생한 Exception
 
     * `pom.xml`에 아래와 같은 dependency 추가
 
@@ -1174,7 +1175,7 @@
 
 ### 스프링 컨네이너 생명 주기
 
-* 스프링 컨테이너 생성 	: GenericXmlApplicationContext ctx = new GenericXmlApplicationContext();
+* 스프링 컨테이너 생성 	: GenericXmlApplicationContext ctx = new GenericXmlApplicationContext();
 
   ----> 설정 						: ctx.load("classpath:baseBall.xml");
 
@@ -1194,7 +1195,7 @@
 
 * ctx.close() 컨테이너가 소멸하는 단계에서 빈도 자동으로 소멸
 
-* 인터페이스 활용
+* 인터페이스 활용
 
   * `InitializingBean` 인터페이스-빈 초기화
 
@@ -1243,12 +1244,12 @@
 
 * `SpringDemo2` 프로젝트 생성
 
-* `test.com.ex` 패키지 생성
+* `com.test.ex01` 패키지 생성
 
   * `Player.java`
 
     ```java
-    package test.com.ex;
+    package com.test.ex01;
     
     public class Player {
     	private String name;
@@ -1269,7 +1270,7 @@
   * `baseBall.xml`(Spring Bean Configuration file)
 
     ```xml
-    <bean id="player1" class="test.com.ex.Player">
+    <bean id="player1" class="com.test.ex01.Player">
         <constructor-arg value="강정호"/>
         <constructor-arg value="28"/>
     </bean>
@@ -1278,7 +1279,7 @@
   * `Main.java`
 
     ```java
-    package test.com.ex;
+    package com.test.ex01;
     
     import org.springframework.context.support.GenericXmlApplicationContext;
     
@@ -1302,7 +1303,7 @@
   * `Player.java`
 
     ```java
-    package test.com.ex;
+    package com.test.ex01;
     
     import org.springframework.beans.factory.DisposableBean;
     import org.springframework.beans.factory.InitializingBean;
@@ -1326,7 +1327,7 @@
   * `Player2.java`
 
     ```java
-    package test.com.ex;
+    package com.test.ex01;
     
     import javax.annotation.PostConstruct;
     import javax.annotation.PreDestroy;
@@ -1375,14 +1376,14 @@
     
     	<context:annotation-config/>
         ...
-        	<bean id="player2" class="test.com.ex.Player2">
+        	<bean id="player2" class="com.test.ex01.Player2">
     		<constructor-arg value="박병호"/>
     		<constructor-arg value="28"/>
     	</bean>
     </beans>
     ```
 
-    * annotaion을 사용하기 위해 `<context:annotation-config/>`태그와 context관련 namespace 설정 추가
+    * annotaion을 사용하기 위해 `<context:annotation-config/>`태그와 context관련 namespace 설정 추가
 
 
 

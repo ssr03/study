@@ -1,4 +1,4 @@
-package test.com.ex;
+package com.test.ex01;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;

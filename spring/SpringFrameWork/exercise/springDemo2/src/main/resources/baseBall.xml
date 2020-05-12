@@ -9,11 +9,11 @@
 
 	<context:annotation-config/>
 	
-	<bean id="player1" class="test.com.ex.Player">
+	<bean id="player1" class="com.test.ex01.Player">
 		<constructor-arg value="강정호"/>
 		<constructor-arg value="28"/>
 	</bean>
-	<bean id="player2" class="test.com.ex.Player2">
+	<bean id="player2" class="com.test.ex01.Player2">
 		<constructor-arg value="박병호"/>
 		<constructor-arg value="28"/>
 	</bean>
