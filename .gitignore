@@ -19,3 +19,29 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+# STS (Spring Tool Suite)
+.springBeans
+
+# eclipse specific
+*.pydevproject
+.project
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+
+# Java related
+target/**
+*.jar
+*.war
+*.ear
+*.class

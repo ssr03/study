@@ -1172,6 +1172,220 @@
 
 ## 빈의 Life Cycle
 
+### 스프링 컨네이너 생명 주기
+
+* 스프링 컨테이너 생성 	: GenericXmlApplicationContext ctx = new GenericXmlApplicationContext();
+
+  ----> 설정 						: ctx.load("classpath:baseBall.xml");
+
+  ​											ctx.refresh();
+
+  ----> 사용						: Player player = ctx.getBean("player", Player.class);
+
+  ​											player.getName();
+
+  ​											player.getPosition();
+
+   ---> 종료						: ctx.close();
+
+### 빈 Lifecyle(생명주기)
+
+* ctx.refresh 과정에서 빈 생성
+
+* ctx.close() 컨테이너가 소멸하는 단계에서 빈도 자동으로 소멸
+
+* 인터페이스 활용
+
+  * `InitializingBean` 인터페이스-빈 초기화
+
+    ```java p
+    public void afterPorpertiesSet() throws Exception{
+    }
+    ```
+
+    * bean을 생성할 때 빈 초기화 과정에서, refresh가 실행이 될 때 호출되는 메소드
+    * bean이 초기화 할 때 처리해야 할 작업
+
+  * `DisposalbleBean`인터페이스
+
+    ```java
+    public void destroy() throws Exception{
+    }
+    ```
+
+    * bean이 close할 때
+    * bean을 소멸시키기 전에 해야 할 작업
+
+  * InitializingBean, Disposablebean은 따로 구현해도 되고, 동시에 구현해도 된다.
+
+* 어노테이션을 활용
+
+  * `@PostConstruct`
+
+    ```java
+    @PostConstruct
+    public void initMethod(){}
+    ```
+
+    * bean이 생성되기 전에 처리해야 할 작업 처리
+    * bean초기화 과정에서 위의 메서드 호출
+
+  * `@PreDestroy`
+
+    ```java
+    @PreDestroy
+    public void destroyMethod(){}
+    ```
+
+    * bean 소멸 전에 처리해야 할 작업 처리
+
+### 예제
+
+* `SpringDemo2` 프로젝트 생성
+
+* `test.com.ex` 패키지 생성
+
+  * `Player.java`
+
+    ```java
+    package test.com.ex;
+    
+    public class Player {
+    	private String name;
+    	private int age;
+    	
+    	public Player() {}
+    	
+    	public Player(String name, int age) {
+    		this.name = name;
+    		this.age = age;
+    	}
+        
+        //getter
+        ...
+    }
+    ```
+
+  * `baseBall.xml`(Spring Bean Configuration file)
+
+    ```xml
+    <bean id="player1" class="test.com.ex.Player">
+        <constructor-arg value="강정호"/>
+        <constructor-arg value="28"/>
+    </bean>
+    ```
+
+  * `Main.java`
+
+    ```java
+    package test.com.ex;
+    
+    import org.springframework.context.support.GenericXmlApplicationContext;
+    
+    public class Main {
+    	
+    	public static void main(String[] args) {
+    		GenericXmlApplicationContext ctx = new GenericXmlApplicationContext();
+    		ctx.load("classpath:baseBall.xml");
+    		
+    		//초기화
+    		ctx.refresh();
+    		
+    		//종료
+    		ctx.close();
+    	}
+    }
+    ```
+
+* 인터페이스 이용한 구현
+
+  * `Player.java`
+
+    ```java
+    package test.com.ex;
+    
+    import org.springframework.beans.factory.DisposableBean;
+    import org.springframework.beans.factory.InitializingBean;
+    
+    public class Player implements InitializingBean, DisposableBean{
+        ...
+      	@Override
+    	public void destroy() throws Exception {
+    		System.out.println("빈의 소멸시 처리할 명령");
+    	}
+    
+    	@Override
+    	public void afterPropertiesSet() throws Exception {
+    		System.out.println("빈의 생성시 처리할 명령");	
+    	}
+    }
+    ```
+
+* 어노테이션을 이용한 구현
+
+  * `Player2.java`
+
+    ```java
+    package test.com.ex;
+    
+    import javax.annotation.PostConstruct;
+    import javax.annotation.PreDestroy;
+    
+    public class Player2 {
+    	private String name;
+    	private int age;
+    	
+    	public Player2() {}
+    	
+    	public Player2(String name, int age) {
+    		this.name = name;
+    		this.age = age;
+    	}
+    
+    	public String getName() {
+    		return name;
+    	}
+    
+    	public int getAge() {
+    		return age;
+    	}
+    	
+    	@PostConstruct
+    	public void init() {
+    		System.out.println("빈 생성시 처리해야할 작업");
+    	}
+    	
+    	@PreDestroy
+    	public void destroy() {
+    		System.out.println("빈 소멸시 처리해야할 작업");
+    	}
+    }
+    ```
+
+  * `baseBall.xml`
+
+    ```xml
+    <beans ...
+    	...
+    	xmlns:context="http://www.springframework.org/schema/context"
+    	xsi:schemaLocation=...
+    	...
+    	http://www.springframework.org/schema/context
+    	http://www.springframework.org/schema/context/spring-context.xsd">
+    
+    	<context:annotation-config/>
+        ...
+        	<bean id="player2" class="test.com.ex.Player2">
+    		<constructor-arg value="박병호"/>
+    		<constructor-arg value="28"/>
+    	</bean>
+    </beans>
+    ```
+
+    * annotaion을 사용하기 위해 `<context:annotation-config/>`태그와 context관련 namespace 설정 추가
+
+
+
 ## 빈의 범위(Scope)
 
 ## 사용자 초기화 메소드 및 사용자 소멸 메소드 설정
