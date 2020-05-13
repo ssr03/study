@@ -1177,7 +1177,7 @@
 
 * 스프링 컨테이너 생성 	: GenericXmlApplicationContext ctx = new GenericXmlApplicationContext();
 
-  ----> 설정 						: ctx.load("classpath:baseBall.xml");
+  ----> 설정 						:  ctx.load("classpath:baseBall.xml");
 
   ​											ctx.refresh();
 
@@ -1388,6 +1388,124 @@
 
 
 ## 빈의 범위(Scope)
+
+### 빈의 범위(scope)
+
+* 범위
+  * 해당하는 객체가 어디까지 영향을 미치는지 결정하는 것
+* `<bean>` 태그의 속성 값(default 값은 singleton)
+  * singleton: 스프링 컨테이너에 의해 한 개의 빈 객체만 생성
+  * prototype: 빈을 사용할 때 마다 객체를 생성
+  * request: HTTP 요청 마다 빈 객체를 생성(WebApplicationContext에서만 적용) 
+  * session: HTTP 세션 마다 빈 객체를 생성(WebApplicationContext에서만 적용)
+  * global-session: 글러벌 HTTP 세션에 대해 빈 객체를 생성
+
+### scope가 singleton인 경우
+
+* `com.test.ex02` 패키지 생성
+
+  * `Person.java`
+
+    ```java
+    package com.test.ex02;
+    
+    public class Person {
+    	private String name;
+    	private int age;
+    	
+    	public Person() {}
+    	
+    	public Person(String name, int age) {
+    		this.name = name;
+    		this.age = age;
+    	}
+    
+    	//getter, setter
+    }
+    ```
+
+  * `person.xml`(spring bean configuration file)
+
+    ```xml
+    <bean id="person" class="com.test.ex02.Person" scope="singleton">
+        <constructor-arg value="김말동"/>
+        <constructor-arg value="32"/>
+    </bean>
+    ```
+
+  * `PersonTest.java`
+
+    ```java
+    package com.test.ex02;
+    
+    import org.springframework.context.support.AbstractApplicationContext;
+    import org.springframework.context.support.GenericXmlApplicationContext;
+    
+    public class PersonTest {
+    	public static void main(String[] args) {
+    		AbstractApplicationContext ctx = new GenericXmlApplicationContext("classpath:person.xml");
+    		
+    		Person person1 = ctx.getBean("person",Person.class);
+    		System.out.println("이름: " + person1.getName());
+    		System.out.println("나이: " + person1.getAge());
+    		
+    		System.out.println("---------------------------");
+    		
+    		Person person2 = ctx.getBean("person",Person.class);
+    		System.out.println("이름: " + person2.getName());
+    		System.out.println("나이: " + person2.getAge());
+    		
+    		System.out.println("---------------------------");
+    		if(person1.equals(person2))System.out.println("person1 == person2");
+    		else System.out.println("person1 != person2");
+        }
+    }
+    ```
+
+### scope가 Prototype인 경우
+
+* `com.test.ex02` 
+
+  * `person.xml`
+
+    ```xml
+    <bean id="personP" class="com.test.ex02.Person" scope="prototype">
+        <constructor-arg value="김윤동"/>
+        <constructor-arg value="30"/>
+    </bean>
+    ```
+
+  * `PersonTest.java`
+
+    ```java
+    package com.test.ex02;
+    
+    import org.springframework.context.support.AbstractApplicationContext;
+    import org.springframework.context.support.GenericXmlApplicationContext;
+    
+    public class PersonTest {
+    	public static void main(String[] args) {
+    		AbstractApplicationContext ctx = new GenericXmlApplicationContext("classpath:person.xml");
+    		
+    		Person personP1 = ctx.getBean("personP",Person.class);
+    		System.out.println("이름: " + personP1.getName());
+    		System.out.println("나이: " + personP1.getAge());
+    		
+    		System.out.println("---------------------------");
+    		
+    		Person personP2 = ctx.getBean("personP",Person.class);
+    		System.out.println("이름: " + personP2.getName());
+    		System.out.println("나이: " + personP2.getAge());
+    		
+    		System.out.println("---------------------------");
+    		if(personP1.equals(personP2))System.out.println("personP1 == personP2");
+    		else System.out.println("personP1 != personP2");
+    		
+    	}
+    }
+    ```
+
+    
 
 ## 사용자 초기화 메소드 및 사용자 소멸 메소드 설정
 
