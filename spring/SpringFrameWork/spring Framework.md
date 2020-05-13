@@ -1509,6 +1509,100 @@
 
 ## 사용자 초기화 메소드 및 사용자 소멸 메소드 설정
 
+### 커스텀 초기화 메소드/ 커스텀 소멸 메소드
+
+* 객체의 생성과 소멸시에 특정 메서드를 실행시키고 싶을 때 사용
+  * init-mothod
+    * 커스텀 초기화 메서드를 지정하는 `<bean>` 태그의 속성
+  * destroy-method
+    * 커스텀 소멸 메서드를 지정하는 `<bean`태그의 속성
+* **BeanNameAware** 인터페이스
+  * 빈 객체가 자기 자신의 이름을 알아야 할 경우 사용
+  * 클래스가 BeanNameAware 인터페이스를 구현한 경우 컨테이너는 `setBeanName()`메서드를 호출해서 빈 객체의 이름을 전달
+  * `setBeanName(String arg)`
+    * 객체가 생성될 때 해당 객체의 id나 name값을 전달 받는 메서드
+
+### 예제
+
+* `com.test.ex03`패키지 생성
+
+  * `LifeBean.java` 인터페이스
+
+    ```java
+    package com.test.ex03;
+    
+    public interface LifeBean {
+    	void lifeMethod();
+    }
+    ```
+
+  * `LifeBeanImpl.java`-LifeBean구현
+
+    ```java
+    package com.test.ex03;
+    
+    import org.springframework.beans.factory.BeanNameAware;
+    
+    public class LifeBeanImpl implements LifeBean, BeanNameAware{
+    
+    	private String beanName; //설정파일에서 bean의 id를 저장하기 위한 변수
+    	
+    	//사용자 초기화 메소드
+    	public void init() {
+    		System.out.println("사용자 초기화 메소드");
+    	}
+    	
+    	//사용자 소멸 메소드
+    	public void end() {
+    		System.out.println("사용자 소멸 메소드");
+    	}
+    	
+    	@Override
+    	public void lifeMethod() {
+    		System.out.println("비즈니스 로직을 수행");
+    		System.out.println("beanName: " + beanName);
+    	}
+    	
+    	//빈 객체가 자신의 이름을 알아야 하는 경우 사용하는 메소드(객체가 생성될 때 해당 객체의 id값을 전달(주입) 받는 메소드)
+    	@Override
+    	public void setBeanName(String beanName) {
+    		this.beanName = beanName;
+    	}
+    }
+    ```
+
+  * `lifeBean.xml`
+
+    ```xml
+    <!-- 빈 객체 생성시에 커스텀 초기화 메소드와 커스텀 소멸 메서드 지정함 -->
+    	<bean id="lifeBean" class="com.test.ex03.LifeBeanImpl" init-method="init" destroy-method="end"></bean>
+    ```
+
+  * `MainLifeBean.java`
+
+    ```java
+    package com.test.ex03;
+    
+    import org.springframework.context.support.AbstractApplicationContext;
+    import org.springframework.context.support.GenericXmlApplicationContext;
+    
+    public class MainLifeBean {
+    
+    	public static void main(String[] args) {
+    	
+    		AbstractApplicationContext ctx = new GenericXmlApplicationContext("classpath:lifeBean.xml");
+    		LifeBean bean = ctx.getBean("lifeBean", LifeBeanImpl.class);
+    		
+    		bean.lifeMethod();
+    		
+    		ctx.close();
+    	}
+    
+    }
+    ```
+
+
+
 ## Environment를 이용한 빈 설정
 
 ## XML에 외부 properties파일 불러오기
