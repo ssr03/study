@@ -730,11 +730,170 @@
 
 ## 콜렉션, 바인드 변수 사용
 
+### Table Type 변수(컬렉션)
 
+* 컬렉션
 
-## 조건문(if문, case문)-4/22
+  * 일반 프로그래밍 언어에서 사용하는 배열 타입을 PL/SQL에서는 **컬렉션**이라고 한다
+
+* 종류
+
+  * 연관배열(associative array/index-by table)
+    * 키와 값의 쌍으로 구성된 컬렉션, java의 해시테이블과 같은 개념
+    * key의 데이터 유형
+      * 숫자: binary_integer, pls_integer
+        * 위 두 가지 데이터 타입은 number보다 작은 저장 영역 필요, 산술 연산의 경우 number보다 빠르다
+      * 문자: varchar2
+    * 값(value)
+      * 일반 데이터 타입, 레코드 타입이 값이 될 수 있다
+      * 레코드 타입일 경우 여러 개의 값을 가질 수 있다
+  * varry(variable array)
+    * 고정 길이를 가진 배열(순서 유지)
+    * 일반 프로그래밍에서 사용하는 배열과 같다
+  * 중첩테이블(nested table)
+    * varry와 흡사한 구조의 배열(순서 유지x)
+    * 배열의 크기를 명시하지 않음, 동적으로 배열의 크기가 설정
+
+* Table 타입의 선언 형식
+
+  1. 정의
+
+     ```sql 
+     Type 타입명 IS TABLE OF
+     employees.first_name&type
+     INDEX BY BINARY_INTEGER;
+     ```
+
+  2. 선언(메모리화)-실제 메모리를 잡아서 변수로 공간 확보
+
+     식별자 타입명;
+
+* 실습
+
+  ```sql
+  SET serveroutput ON;
+  
+  ```
+
+  
+
+## 조건문(if문, case문)
 
 
 
 ## 반복문(basic loop, while, for loop, continue)
+
+
+
+## 서브프로그램, 패키지, 테이블 스페이스
+
+### 테이블 스페이스 이해
+
+#### 테이블 스페이스
+
+* 오라클에서 데이터를 저장할 때 사용하는 **논리적 저장공간** (하드디스크에서 실제 여러 개의 물리적 데이터 파일로 구성될 수 있음). 오라클 시스템 운영에 필요한 필수 정보 담고 있음
+  * 데이터베이스 안에 여러 개의 테이블 스페이스로 구성. 
+  * 테이블 스페이스 안에는 여러 개의 세그먼트로 구성
+
+* 시스템 테이블 스페이스
+  * Data Dictionary 정보, 프로시저, 트리거, 패키지, 시스템 rollback segment, 사용자 데이터 포함
+    * 시스템을 운영/관리하기 위한 세그먼트( 프로시저, 트리거, 패키지, 시스템 rollback segment 등)+사용자 데이터(일반적으로 만든 테이블)
+  * 기본적으로 자동으로 갖고 있는 테이블 스페이스
+* Non-system 테이블 스페이스
+  * Temporary 세그먼트, application Data 세그먼트, index 세그먼트, 사용자 데이터 세그먼트
+    * 관리와는 상관없는 세그먼트 
+    * Temporary세그먼트: 데이터 정렬을 하기 위한 공간
+
+#### 테이블 스페이스 구성
+
+* 세그먼트(segment)
+  * 익스텐트(extent)-연속적인 데이터블록으로 구성
+    * 데이터블록: 오라클 입출력 최소 단위 (논리적 저장 최소단위)
+
+#### 테이블 스페이스 구문
+
+* 테이블 스페이스 생성
+
+  ```sql
+  create tablespace 테이블스페이스명
+  	datafile '저장될 경로 및 사용할 파일명'
+  	size 저장공간
+  	default storage storage_clause;
+  ```
+
+  * 테이블스페이스 오브젝트로 생성하면 하나의 파일(.dbf, .ora)로 저장
+
+* 테이블스페이스 삭제
+
+  ```sql
+  drop tablespace 테이블스페이스이름
+  [including contents [and datafiles]]
+  [cascade constraints];
+  ```
+
+#### 실습
+
+* 데이터베이스 접속
+  * host: localhost
+  * database(SID): orcl
+  * 사용자이름/비밀번호: system/1234
+
+* tablespace 생성
+
+  ```sql
+  CREATE tablespace test_1
+  	datafile 'c:\oradata\test_1.dbf' SIZE 10M
+  	DEFAULT storage (--extent관련 세부 옵션
+  		INITIAL 1M --최초 크기
+  		NEXT 1M
+  		MINEXTENTS 1
+  		MAXEXTENTS 10
+  		PCTINCREASE 0 );
+  ```
+
+  * `c:\oradata` 폴더 생성이 선행돼야 함
+
+* tablespace공간 늘리기
+
+  ```sql
+  ALTER tablespace test_1
+  	ADD datafile 'c:\oradata\test_2.dbf' SIZE 10M;
+  ```
+
+* tablespace삭제
+
+  ```sql
+  --test_1 테이블스페이스에 aa테이블 생성
+  CREATE TABLE aa(
+  	name varchar2(10)
+  ) tablespace test_1;
+  
+  --테이블 스페이스 삭제
+  DROP tablespace test_1;--테이블스페이스가 비어있지 않으므로 including contents 옵션 필요
+  
+  DROP tablespace test_1
+  	INCLUDING contents;--파일은 남아 있음
+  
+  --데이터 파일까지 삭제옵션포함
+  DROP tablespace test_1
+  	INCLUDING contents AND datafiles;
+  ```
+
+  
+
+### 테이블 스페이스 관리
+
+
+
+## 사용자 관리와 권한
+
+### 사용자 관리(생성, 변경, 삭제) 및 사용자 정보 알아보기
+
+### 비밀번호 관리
+
+### 시스템 권한의 이해
+
+### 오브젝트 권한의 이해
+
+### 롤의 이해
 
