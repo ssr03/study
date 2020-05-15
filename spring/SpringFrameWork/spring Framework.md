@@ -1726,6 +1726,113 @@
 
 ## XML에 외부 properties파일 불러오기
 
+### 외부 파일을 이용한 빈 설정
+
+* EnvironmentAware, Environment 인터페이스를 활용
+* XML 파일에 외부 properties 파일을 명시하는 방법
+* Java 파일에 외부 프로퍼티 파일을 명시하는 방법
+
+### 실습
+
+* `com.test.ex05` 패키지 생성
+
+  * `ExternalFileEx.java`
+
+    ```java
+    package com.test.ex05;
+    
+    import org.springframework.beans.factory.DisposableBean;
+    import org.springframework.beans.factory.InitializingBean;
+    
+    public class ExternalFileEx implements InitializingBean, DisposableBean {
+    	private String id;
+    	private String pwd;
+    	private String extId;
+    	private String extPwd;
+    	
+    	@Override
+    	public void destroy() throws Exception {
+            System.out.println("destroy() 호출");
+    	}
+    
+    	@Override
+    	public void afterPropertiesSet() throws Exception {
+    		System.out.println("afterPropertiesSet() 호출");
+    	}
+    
+    	//setter, getter
+    }
+    ```
+
+  * `external.properties`
+
+    ```properties
+    ext.id = abcd
+    ext.pwd = abcd1234
+    ```
+
+  * `ext.xml`
+
+    ```xml
+    <beans ...
+    	xmlns:context="http://www.springframework.org/schema/context"
+    	xsi:schemaLocation=" 
+    	http://www.springframework.org/schema/context
+    	http://www.springframework.org/schema/context/spring-context.xsd
+    	...">
+    	
+    	<context:property-placeholder location="classpath:env.properties, 
+    	classpath:externals.properties"/>
+    	
+    	<bean id="externalFileEx" class="com.test.ex05.ExternalFileEx">
+    		<property name="id">
+    			<value>${env.id}</value>
+    		</property>
+    		<property name="pwd">
+    			<value>${env.pwd}</value>
+    		</property>
+    				<property name="extId">
+    			<value>${ext.id}</value>
+    		</property>
+    		<property name="extPwd">
+    			<value>${ext.pwd}</value>
+    		</property>
+    	</bean>
+    
+    </beans>
+    ```
+
+    * `context` namespace 추가
+
+  * `MainExt.java`
+
+    ```java
+    package com.test.ex05;
+    
+    import org.springframework.context.support.AbstractApplicationContext;
+    import org.springframework.context.support.GenericXmlApplicationContext;
+    
+    public class MainExt {
+    
+    	public static void main(String[] args) {
+    		
+    		AbstractApplicationContext ctx = new GenericXmlApplicationContext("classpath:ext.xml");
+    		
+    		ExternalFileEx ext = ctx.getBean("externalFileEx", ExternalFileEx.class);
+    		
+    		System.out.println("envId: " + ext.getId());
+    		System.out.println("envPwd: " + ext.getPwd());
+    		System.out.println("extId: " + ext.getExtId());
+    		System.out.println("extPwd: " + ext.getExtPwd());
+    		ctx.close();
+    		
+    	}
+    
+    }
+    ```
+
+    
+
 ## java코드에 외부 properties파일 불러오기
 
 ## Profile속정 이용한 빈설정
