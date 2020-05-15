@@ -953,7 +953,7 @@
 
   * `Player.java`
     
-  * `com.test.diEx06`의 `Player.java`복사
+    * `com.test.diEx06`의 `Player.java`복사
     
   * `ConfigApp.java`
 
@@ -1511,9 +1511,9 @@
 
 ### 커스텀 초기화 메소드/ 커스텀 소멸 메소드
 
-* 객체의 생성과 소멸시에 특정 메서드를 실행시키고 싶을 때 사용
+* 객체의 생성과 소멸시에 특정 메서드를 실행시키고 싶을 때 사용
   * init-mothod
-    * 커스텀 초기화 메서드를 지정하는 `<bean>` 태그의 속성
+    * 커스텀 초기화 메서드를 지정하는 `<bean>` 태그의 속성
   * destroy-method
     * 커스텀 소멸 메서드를 지정하는 `<bean`태그의 속성
 * **BeanNameAware** 인터페이스
@@ -1604,6 +1604,125 @@
 
 
 ## Environment를 이용한 빈 설정
+
+### 외부 파일을 이용한 빈 설정
+
+* EnvironmentAware, Environment 인터페이스를 활용
+  * Context -> `getEnvironment()` ->Envrionment 객체 얻기
+  * Environment  ->`getPropertySouces` 객체를 얻기
+  * PropertySources ->프로퍼티를 추가(`addLast`)하거나, 추출(`getProperty`) 작업을 한다
+
+### 실습
+
+* `com.test.ex04`패기지 생성
+
+  * `EnvironmentEx.java`
+
+    ```java
+    package com.test.ex04;
+    
+    import org.springframework.beans.factory.DisposableBean;
+    import org.springframework.beans.factory.InitializingBean;
+    import org.springframework.context.EnvironmentAware;
+    import org.springframework.core.env.Environment;
+    
+    public class EnvironmentEx implements EnvironmentAware, InitializingBean, DisposableBean {
+    	
+    	private Environment env;
+    	private String id;
+    	private String pwd;
+    	
+    	@Override
+    	public void setEnvironment(Environment env) {
+    		System.out.println("setEnvironment() 호출");
+    		this.env = env;
+    	}
+    
+    	@Override
+    	public void destroy() throws Exception {
+    		System.out.println("destroy() 호출");	
+    	}
+    
+    	@Override
+    	public void afterPropertiesSet() throws Exception {
+    		System.out.println("afterPropertiesSet() 호출");	
+    	}
+    
+    	//id, pwd setter, getter
+    }
+    ```
+
+  * `env.xml`(Spring Bean configuration file)
+
+    ```xml
+    <bean id="env" class="com.test.ex04.EnvironmentEx"/>
+    ```
+
+  * `env.properties`( `src/main/resources` 내부)
+
+    ```properties
+    env.id = test
+    env.pwd = 1234
+    ```
+
+  * `EnvironmentEx.java`
+
+    ```java
+    ...
+        @Override
+    	public void afterPropertiesSet() throws Exception {
+    		System.out.println("afterPropertiesSet() 호출");	
+    		setId(env.getProperty("env.id"));
+    		setPwd(env.getProperty("env.pwd"));
+    	}
+    ...
+    ```
+
+  * `MainEnv.java`
+
+    ```java
+    package com.test.ex04;
+    import java.io.IOException;
+    
+    import org.springframework.context.ConfigurableApplicationContext;
+    import org.springframework.context.support.GenericXmlApplicationContext;
+    import org.springframework.core.env.ConfigurableEnvironment;
+    import org.springframework.core.env.MutablePropertySources;
+    import org.springframework.core.io.support.ResourcePropertySource;
+    
+    public class MainEnv {
+    	
+    	public static void main(String[] args) throws IOException {
+    		//context만들기
+    		ConfigurableApplicationContext ctx = new GenericXmlApplicationContext();
+    		//Environment객체 얻어오기
+    		ConfigurableEnvironment env = ctx.getEnvironment();
+    		//propertySource라는 객체를 얻어오기
+    		MutablePropertySources propertySources = env.getPropertySources();//외부파일로 부터 property얻어옴
+    		
+    		//외부파일에 있는 설정된 값을 propertySource에 사용가능
+    		propertySources.addLast(new ResourcePropertySource("classpath:env.properties")); 
+    		
+    		//env.properties 파일에서 가져온 정보를 출력
+    		System.out.println(env.getProperty("env.id"));
+    		System.out.println(env.getProperty("env.pwd"));
+    		
+    		GenericXmlApplicationContext gCtx = (GenericXmlApplicationContext)ctx;
+    		gCtx.load("classpath:env.xml");
+    		gCtx.refresh();
+    		
+    		EnvironmentEx envEx = gCtx.getBean("env", EnvironmentEx.class);
+    		System.out.println("env id: " + envEx.getId());
+    		System.out.println("env pwd: " + envEx.getPwd());
+    		
+    		gCtx.close();
+    		ctx.close();
+    		
+    	}//main
+    }
+    ```
+
+
 
 ## XML에 외부 properties파일 불러오기
 
