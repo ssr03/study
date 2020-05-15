@@ -1835,6 +1835,92 @@
 
 ## java코드에 외부 properties파일 불러오기
 
+* `ext.xml`대신에 `ExtConfg.java`파일 만들기
+
+  * `env.properties`, `external.properties` 포함시키기
+
+* `com.test.ex06`패키지 
+
+  * `com.test.ex05`에서 `ExternalFileEx.java` 복사
+
+  * `ExtConfig.java`
+
+    ```java
+    package com.test.ex05;
+    
+    import org.springframework.beans.factory.annotation.Value;
+    import org.springframework.context.annotation.Bean;
+    import org.springframework.context.annotation.Configuration;
+    import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+    import org.springframework.core.io.ClassPathResource;
+    import org.springframework.core.io.Resource;
+    
+    @Configuration
+    public class ExtConfig {
+    
+    	@Value("${env.id}")
+    	private String envId;
+    	@Value("${env.pwd}")
+    	private String envPwd;
+    	@Value("${ext.id}")
+    	private String extId;
+    	@Value("${ext.pwd}")
+    	private String extPwd;
+    	
+    	//컨테이너에서 호출해서 사용하는 메소드
+        @Bean
+    	public static PropertySourcesPlaceholderConfigurer properties() {
+    		//프로퍼티 파일의 위치값을 저장하는 객체
+    		PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
+    		
+    		Resource[] locations = new Resource[2];
+    		locations[0] = new ClassPathResource("env.properties");
+    		locations[1] = new ClassPathResource("externals.properties");
+    		configurer.setLocations(locations);
+    		
+    		return configurer;
+    	}//properties()
+    	
+    	@Bean
+    	public ExternalFileEx extConfig() {
+    		ExternalFileEx ext = new ExternalFileEx();
+    		ext.setId(envId);
+    		ext.setPwd(envPwd);
+    		ext.setExtId(extId);
+    		ext.setExtPwd(extPwd);
+    		
+    		return ext;
+    		
+    	}//extConfig()
+    }
+    ```
+
+  * `MainExt2.java`
+
+    ```java
+    package com.test.ex06;
+    
+    import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+    
+    import com.test.ex05.ExternalFileEx;
+    
+    public class MainExt2 {
+    	public static void main(String[] args) {
+    		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ExtConfig.class);
+    		ExternalFileEx ext=ctx.getBean("extConf", ExternalFileEx.class); // ExtConfig 클래스의 extConfig 메서드
+    		
+    		System.out.println("envId: " + ext.getId());
+    		System.out.println("envPwd: " + ext.getPwd());
+    		System.out.println("extId: " + ext.getExtId());
+    		System.out.println("extPwd: " + ext.getExtPwd());
+    		
+    		ctx.close();
+    	}
+    }
+    ```
+
+
+
 ## Profile속정 이용한 빈설정
 
 ## IoC 개념 정리
