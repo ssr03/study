@@ -1729,10 +1729,10 @@
 ### 외부 파일을 이용한 빈 설정
 
 * EnvironmentAware, Environment 인터페이스를 활용
-* 프로퍼티 파일을 이용한 빈 설정
+* 프로퍼티 파일을 이용한 빈 설정
   * XML 파일에 외부 properties 파일을 명시하는 방법
   * Java 파일에 외부 프로퍼티 파일을 명시하는 방법
-* 프로파일 속성(profile)을 이용한 빈설정
+* 프로파일 속성(profile)을 이용한 빈설정
 
 ### 실습
 
@@ -2005,7 +2005,7 @@
     </beans>
     ```
 
-    * 실제 서비스 설정 파일
+    * 실제 서비스 설정 파일
 
 ### Java코드를 사용한 Profile설정
 
@@ -2163,6 +2163,65 @@
 
 
 ## AOP 개념 이해
+
+### AOP: 관점 지향 프로그래밍
+
+* 기존의 OOP를 보완한 개념(핵심사항과 공통 관심사항을 분리하여 구현)
+* AOP는 primary concern과 corss-cutting concern을 별도의 코드로 구현해서 최종적으로 이 둘을 조합해서 완성하는 것
+
+* AOP(Aspect Oriented Programming)의 Aspect는 Advice와 Point-cut을 함께 지칭하는 단어
+
+### 주요 용어(중요)
+
+* 핵심 관심 사항(core(primary) concern)
+
+  * 비즈니스 로직(주 업무)
+
+* 공통 관심사(횡단 관심 사항: cross-cutting concern)
+
+  * 부가적인 기능(보조 업무)
+
+  >  참고. 비즈니스 로직은 core+cross-cutting도 될 수 있다
+
+* Code
+
+  * primary Concern을 구현 코드
+
+* Advice
+
+  * cross-cutting concern을 구현한 코드
+
+* jointPoint
+
+  * code와 advice를 연결해 주는 설정 정보
+  * advice가 적용 가능한 지점(메소드 호출, 필드값 변경)
+
+* Point-cut
+
+  * JointPoint의 부분집합으로서 실제 advice가 적용되는 Jointpoint
+
+* Weaving
+
+  * Code, Advice, Point-cut등을 조합해서 애플리케이션을 만들어 가는 과정
+
+* Target
+
+  * 핵심사항(core)이 구현된 객체
+
+### 스프링의 AOP
+
+스프링은 자체적인 프록시 기반의 AOP를 지원
+
+* 필드값 변경과 같은 Jointpoint 사용할 수 없다
+* 메소드 호출 jointpoint만 지원
+* 스프링 AOP는 완전한 AOP를 지원하는 것이 목적이 아니라 엔터프라이즈 애플리케이션을 구현하는데 필요한 정도의 기능 제공을 목적으로 하고 있다
+
+### AOP 구현
+
+* 설정 파일을 이용하는 방법
+* 어노테이션을 이용하는 방법
+
+
 
 ## XML 스키마 기반의 AOP
 
