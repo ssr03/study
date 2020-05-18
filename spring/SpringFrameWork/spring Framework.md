@@ -1608,8 +1608,8 @@
 ### 외부 파일을 이용한 빈 설정
 
 * EnvironmentAware, Environment 인터페이스를 활용
-  * Context -> `getEnvironment()` ->Envrionment 객체 얻기
-  * Environment  ->`getPropertySouces` 객체를 얻기
+  * Context -> `getEnvironment()` ->Envrionment 객체 얻기
+  * Environment  ->`getPropertySouces` 객체를 얻기
   * PropertySources ->프로퍼티를 추가(`addLast`)하거나, 추출(`getProperty`) 작업을 한다
 
 ### 실습
@@ -1729,8 +1729,10 @@
 ### 외부 파일을 이용한 빈 설정
 
 * EnvironmentAware, Environment 인터페이스를 활용
-* XML 파일에 외부 properties 파일을 명시하는 방법
-* Java 파일에 외부 프로퍼티 파일을 명시하는 방법
+* 프로퍼티 파일을 이용한 빈 설정
+  * XML 파일에 외부 properties 파일을 명시하는 방법
+  * Java 파일에 외부 프로퍼티 파일을 명시하는 방법
+* 프로파일 속성(profile)을 이용한 빈설정
 
 ### 실습
 
@@ -1921,7 +1923,180 @@
 
 
 
-## Profile속정 이용한 빈설정
+## Profile속성 이용한 빈설정
+
+* 실제환경과 개발환경에 대한 설정
+
+### XML을 사용한 Profile설정
+
+* `com.test.ex07`패키지 생성
+
+  * `ProfileEx.java`
+
+    ```java
+    package com.test.ex07;
+    
+    public class ProfileEx {
+    	private String ip;
+    	private String port;
+    	
+    	//setter, getter
+    }
+    ```
+
+  * `MainProfile.java`
+
+    ```java
+    import org.springframework.context.support.GenericXmlApplicationContext;
+    
+    public class MainProfile {
+    	public static void main(String[] args) {
+    		String profile = null;
+    		Scanner sc = new Scanner(System.in);
+    		String str = sc.next();
+    		
+    		if(str.equals("dev")) {
+    			profile = "dev";
+    		}else if(str.equals("service")) {
+    			profile = "service";
+    		}
+    		sc.close();
+    		
+    		GenericXmlApplicationContext ctx = new GenericXmlApplicationContext();
+    		ctx.getEnvironment().setActiveProfiles(profile); //설정파일을 결정
+    		ctx.load("dev.xml", "service.xml");
+    		
+    		ProfileEx prof = ctx.getBean("profileEx", ProfileEx.class);
+    		System.out.println("ip: " + prof.getIp());
+    		System.out.println("port: " + prof.getPort());
+    		
+    		ctx.close();
+    		
+    	}
+    }
+    ```
+
+  * `dev.xml`(Spring Bean Configuration File)
+
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <beans xmlns=...
+    	xsi:schemaLocation="..."
+    	 profile="dev">
+    	
+    	<bean id="profileEx" class="com.test.ex07.ProfileEx">
+    		<property name="ip" value="localhost"/>
+    		<property name="port" value="9090"/>
+    	</bean>
+    </beans>
+    ```
+
+    * 개발환경 설정 파일
+
+  * `service.xml`(Spring Bean Configuration File)
+
+    ```xml
+    <beans ...
+    profile="service">
+    	<bean id="profileEx" class="com.test.ex07.ProfileEx">
+    		<property name="ip" value="210.177.226.15"/>
+    		<property name="port" value="80"/>
+    	</bean>
+    </beans>
+    ```
+
+    * 실제 서비스 설정 파일
+
+### Java코드를 사용한 Profile설정
+
+* `dev.xml`, `service.xml`을 java코드로 만들어야 함
+
+* `com.text.ex07`
+
+  * `DevConfig.java`
+
+    ```java
+    package com.test.ex07;
+    
+    import org.springframework.context.annotation.Bean;
+    import org.springframework.context.annotation.Configuration;
+    import org.springframework.context.annotation.Profile;
+    
+    @Configuration
+    @Profile("dev")
+    public class DevConfig {
+    	@Bean
+    	public ProfileEx profileEx() {
+    		ProfileEx prof = new ProfileEx();
+    		prof.setIp("localhost");
+    		prof.setPort("9090");
+    		return prof;
+    	}
+    }
+    ```
+
+  * `SvcConfig.java`
+
+    ```java
+    package com.test.ex07;
+    
+    import org.springframework.context.annotation.Bean;
+    import org.springframework.context.annotation.Configuration;
+    import org.springframework.context.annotation.Profile;
+    
+    @Configuration
+    @Profile("service")
+    public class SvcConfig {
+    	@Bean
+    	public ProfileEx profileEx() {
+    		ProfileEx prof = new ProfileEx();
+    		prof.setIp("210.177.226.15");
+    		prof.setPort("80");
+    		return prof;
+    	}
+    }
+    ```
+
+  * `MainProfile2.java`
+
+    ```java
+    package com.test.ex07;
+    
+    import java.util.Scanner;
+    
+    import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+    
+    public class MainProfile2 {
+    
+    	public static void main(String[] args) {
+    		String profile = null;
+    		Scanner sc = new Scanner(System.in);
+    		String str = sc.next();
+    		
+    		if(str.equals("dev")) {
+    			profile = "dev";
+    		}else if(str.equals("service")) {
+    			profile = "service";
+    		}
+    		sc.close();
+    		
+    		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+    		ctx.getEnvironment().setActiveProfiles(profile); //설정파일을 결정
+    		ctx.register(DevConfig.class, SvcConfig.class);
+    		ctx.refresh();
+    		
+    		ProfileEx prof = ctx.getBean("profileEx", ProfileEx.class);
+    		System.out.println("ip: " + prof.getIp());
+    		System.out.println("port: " + prof.getPort());
+    		
+    		ctx.close();
+    
+    	}
+    
+    }
+    ```
+
+​	
 
 ## IoC 개념 정리
 

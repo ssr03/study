@@ -22,7 +22,7 @@ public class LifeBeanImpl implements LifeBean, BeanNameAware{
 		System.out.println("beanName: " + beanName);
 	}
 	
-	//빈 객체가 자신의 이름을 알아야 하는 경우 사용하는 메소드(해당 객체의 id값을 전달(주입) 받는 메소드)
+	//빈 객체가 자신의 이름을 알아야 하는 경우 사용하는 메소드(객체가 생성될 때 해당 객체의 id값을 전달(주입) 받는 메소드)
 	@Override
 	public void setBeanName(String beanName) {
 		this.beanName = beanName;
